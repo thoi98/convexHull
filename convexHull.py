@@ -338,7 +338,7 @@ def main():
     screen.fill(screen_color)
     drawAxes(screen)
 
-    write(screen, "SPACE - next iteration\nRETURN - auto iterate\nESC - exit\nR - Restart",
+    write(screen, "SPACE - next iteration\nRETURN - auto iterate\nESC - exit\nR - Restart\nRight arrow -> Generate new set of points",
           color=(0, 150, 50))
 
     # region test
@@ -373,7 +373,8 @@ def main():
                 else:
                     drawAxes(screen)
                 axesVisible = not axesVisible
-                pygame.display.flip()
+                pygame.display.update()
+
             elif events.type == KEYUP and events.key == K_RETURN:
                 autoIterate = not autoIterate
             elif events.type == KEYUP and events.key == K_r:  # restart
@@ -384,6 +385,26 @@ def main():
                 drawPolygon(screen, hull, screen_color)
                 # draw points
                 plotPoints(screen, points, (0, 0, 0), 1)
+                pygame.display.update()
+
+            elif events.type == KEYUP and events.key == K_RIGHT:
+                # erase points
+                plotPoints(screen, points, screen_color, 3)
+                # erase edges of hull
+                drawPolygon(screen, hull, screen_color)
+
+                points = getRandomPoints(100, 1/2)
+                points = list(set(points))
+                print(points)
+                print("\n\n")
+                plotPoints(screen, points, (0, 0, 0), 1)
+                (hull, logs) = solve(screen, points)
+
+                # draw points
+                plotPoints(screen, points, (0, 0, 0), 1)
+                drawAxes(screen)
+                logs_iter = iter(logs)
+                pygame.display.update()
 
         if autoIterate == True:
             if pygame.time.get_ticks() % 1000 == 0:
