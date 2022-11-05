@@ -7,8 +7,8 @@ from pygame.locals import*
 from math import sqrt, sin, acos, cos
 import random
 
-width = 1000
-height = 500
+width = 1500
+height = 700
 screen_color = (200, 200, 200)
 line_color = (255, 0, 0)
 
@@ -338,12 +338,12 @@ def main():
     screen.fill(screen_color)
     drawAxes(screen)
 
-    write(screen, "SPACE - next iteration\nRETURN - auto iterate\nESC - exit",
+    write(screen, "SPACE - next iteration\nRETURN - auto iterate\nESC - exit\nR - Restart",
           color=(0, 150, 50))
 
     # region test
 
-    points = getRandomPoints(20, 1/2)
+    points = getRandomPoints(100, 1/2)
     points = list(set(points))
     print(points)
     print("\n\n")
@@ -376,6 +376,15 @@ def main():
                 pygame.display.flip()
             elif events.type == KEYUP and events.key == K_RETURN:
                 autoIterate = not autoIterate
+            elif events.type == KEYUP and events.key == K_r:  # restart
+                logs_iter = iter(logs)
+                # erase big red points on hull
+                plotPoints(screen, hull, screen_color, 3)
+                # erase edges of hull
+                drawPolygon(screen, hull, screen_color)
+                # draw points
+                plotPoints(screen, points, (0, 0, 0), 1)
+
         if autoIterate == True:
             if pygame.time.get_ticks() % 1000 == 0:
                 draw = True
