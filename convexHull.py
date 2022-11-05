@@ -286,6 +286,7 @@ def main():
     # region test
 
     points = getRandomPoints(20, 1/1.2)
+    points = list(set(points))
     print(points)
     plotPoints(screen, points, (0, 0, 0), 1)
     solve(screen, points)
