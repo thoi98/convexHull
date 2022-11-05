@@ -402,7 +402,8 @@ def main():
 
                 # draw points
                 plotPoints(screen, points, (0, 0, 0), 1)
-                drawAxes(screen)
+                if axesVisible == True:
+                    drawAxes(screen)
                 logs_iter = iter(logs)
                 pygame.display.update()
 
