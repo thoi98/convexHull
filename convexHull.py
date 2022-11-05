@@ -321,10 +321,25 @@ def solve(screen, points):
     return (hull, logs)
 
 
+def write(screen, dataToWrite, pos=(2, 0), color=(0, 0, 0), fontSize=11, lineSpace=1):
+    myfont = pygame.font.SysFont("monospace", fontSize)
+    lines = dataToWrite.split("\n")
+    for i in range(len(lines)):
+        label = myfont.render(lines[i], 1, color)
+        screen.blit(label, (pos[0], pos[1]+(i*lineSpace)+(fontSize*(i+1))))
+    pygame.display.update()
+
+
 def main():
+    pygame.display.set_caption('Convex Hull')
+    pygame.font.init()
+
     screen = pygame.display.set_mode((width, height))
     screen.fill(screen_color)
     drawAxes(screen)
+
+    write(screen, "SPACE - next iteration\nRETURN - auto iterate\nESC - exit",
+          color=(0, 150, 50))
 
     # region test
 
