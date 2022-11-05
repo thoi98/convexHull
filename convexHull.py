@@ -25,8 +25,7 @@ def transFormCoords(coord):
     return (width/2 + coord[0], height/2 - coord[1])
 
 
-def drawAxes(screen):
-    color = (100, 100, 100)
+def drawAxes(screen, color=(100, 100, 100)):
     pygame.draw.line(screen, color, transFormCoords(
         (0, -height/2)), transFormCoords((0, height/2)))
     pygame.draw.line(screen, color, transFormCoords(
@@ -277,7 +276,6 @@ def solve(screen, points):
     up_left = [xleft[1]]
     logs_upLeft = [{"draw": [xleft[1], yup[0]], "erase":[]}]
     up_left.extend(rubberBand(points, xleft[1], yup[0], -1, logs_upLeft))
-    # print(logs_upLeft)
     up_left.extend([yup[0]])
 
     down_left = [xleft[0]]
@@ -320,9 +318,6 @@ def solve(screen, points):
     logs.extend(logs_upRight[1:])
     logs.extend(logs_downRight[1:])
 
-    # plotPoints(screen, hull, (250, 0, 0), 2)
-
-    # drawPolygon(screen, hull, (0, 250, 0), True)
     return (hull, logs)
 
 
@@ -338,12 +333,13 @@ def main():
     print(points)
     print("\n\n")
     plotPoints(screen, points, (0, 0, 0), 1)
-    (hull, logs_upLeft) = solve(screen, points)
+    (hull, logs) = solve(screen, points)
 
     # endregion
     pygame.display.flip()
 
-    logs_upLeft_iter = iter(logs_upLeft)
+    logs_iter = iter(logs)
+    axesVisible = True
     while True:
         for events in pygame.event.get():
             if events.type == QUIT:
@@ -351,7 +347,7 @@ def main():
             if events.type == KEYDOWN and events.key == K_f:
                 return
             if events.type == KEYUP and events.key == K_SPACE:
-                log = next(logs_upLeft_iter, None)
+                log = next(logs_iter, None)
                 if log != None:
                     drawPolygon(screen, log["erase"], screen_color)
                     drawPolygon(screen, log["draw"], (0, 0, 250))
@@ -361,6 +357,14 @@ def main():
                     plotPoints(screen, hull, (255, 0, 0), 3)
                     drawPolygon(screen, hull, generateRandomColorExceptWhite())
                     pygame.display.flip()
+            if events.type == KEYUP and events.key == K_x:
+                if axesVisible == True:
+                    drawAxes(screen, screen_color)
+                else:
+                    drawAxes(screen)
+                axesVisible = not axesVisible
+
+                pygame.display.flip()
 
 
 main()
