@@ -211,9 +211,6 @@ def getLeftRightBounds(points, A, B):
     return (xleft, xright)
 
 
-memo = dict()
-
-
 def rubberBand(points, A, B, direction):
 
     if A[1] == B[1]:    # doing this because sometimes rotation gives slightly different values
@@ -278,6 +275,7 @@ def solve(screen, points):
     plotPoints(screen, hull, (250, 0, 0), 2)
 
     drawPolygon(screen, hull, (0, 250, 0), True)
+    return hull
 
 
 def main():
