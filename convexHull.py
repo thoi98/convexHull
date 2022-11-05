@@ -340,31 +340,42 @@ def main():
 
     logs_iter = iter(logs)
     axesVisible = True
-    startTime = pygame.time.get_ticks()
+    autoIterate = False
+    pygame.time.Clock()
+    draw = False
+
     while True:
         for events in pygame.event.get():
             if events.type == QUIT:
                 sys.exit(0)
-            if events.type == KEYDOWN and events.key == K_ESCAPE:
+            elif events.type == KEYDOWN and events.key == K_ESCAPE:
                 return
-            if events.type == KEYUP and events.key == K_SPACE:
-                log = next(logs_iter, None)
-                if log != None:
-                    drawPolygon(screen, log["erase"], screen_color)
-                    drawPolygon(screen, log["draw"], (0, 0, 250))
-                    print(log)
-                    pygame.display.flip()
-                else:
-                    plotPoints(screen, hull, (255, 0, 0), 3)
-                    drawPolygon(screen, hull, generateRandomColorExceptWhite())
-                    pygame.display.flip()
-            if events.type == KEYUP and events.key == K_x:
+            elif events.type == KEYUP and events.key == K_SPACE:
+                draw = True
+            elif events.type == KEYUP and events.key == K_x:
                 if axesVisible == True:
                     drawAxes(screen, screen_color)
                 else:
                     drawAxes(screen)
                 axesVisible = not axesVisible
                 pygame.display.flip()
+            elif events.type == KEYUP and events.key == K_RETURN:
+                autoIterate = not autoIterate
+        if autoIterate == True:
+            if pygame.time.get_ticks() % 1000 == 0:
+                draw = True
+        if draw == True:
+            log = next(logs_iter, None)
+            if log != None:
+                drawPolygon(screen, log["erase"], screen_color)
+                drawPolygon(screen, log["draw"], (0, 0, 250))
+                print(log)
+                pygame.display.flip()
+            else:
+                plotPoints(screen, hull, (255, 0, 0), 3)
+                drawPolygon(screen, hull, generateRandomColorExceptWhite())
+                pygame.display.flip()
+            draw = False
 
 
 main()
