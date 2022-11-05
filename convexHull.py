@@ -340,11 +340,12 @@ def main():
 
     logs_iter = iter(logs)
     axesVisible = True
+    startTime = pygame.time.get_ticks()
     while True:
         for events in pygame.event.get():
             if events.type == QUIT:
                 sys.exit(0)
-            if events.type == KEYDOWN and events.key == K_f:
+            if events.type == KEYDOWN and events.key == K_ESCAPE:
                 return
             if events.type == KEYUP and events.key == K_SPACE:
                 log = next(logs_iter, None)
@@ -363,7 +364,6 @@ def main():
                 else:
                     drawAxes(screen)
                 axesVisible = not axesVisible
-
                 pygame.display.flip()
 
 
