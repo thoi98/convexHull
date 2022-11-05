@@ -13,6 +13,14 @@ screen_color = (200, 200, 200)
 line_color = (255, 0, 0)
 
 
+def generateRandomColorExceptWhite():
+    r = random.randint(0, 255)
+    g = random.randint(0, 255)
+    b = random.randint(
+        0, 255) if r <= 150 and g <= 150 else random.randint(0, 100)
+    return (r, g, b)
+
+
 def transFormCoords(coord):
     return (width/2 + coord[0], height/2 - coord[1])
 
@@ -211,7 +219,15 @@ def getLeftRightBounds(points, A, B):
     return (xleft, xright)
 
 
-def rubberBand(points, A, B, direction):
+def insertIntoList(lst, pointBefore, pointsToInsert):
+    pointsToInsert = list(set(pointsToInsert))
+    i = lst.index(pointBefore)+1
+    for p in pointsToInsert:
+        lst.insert(i, p)
+        i += 1
+
+
+def rubberBand(points, A, B, direction, logs=[]):
 
     if A[1] == B[1]:    # doing this because sometimes rotation gives slightly different values
         direction = 1
@@ -225,14 +241,22 @@ def rubberBand(points, A, B, direction):
 
     if next[0] == A or next[0] == B or next[1] == A or next[1] == B:
         return []
+
+    if len(logs) != 0:  # notEmpty
+        nextLogDraw = logs[-1]["draw"][:]
+        nextLogErase = logs[-1]["draw"][:]
+
+        insertIntoList(nextLogDraw, A, list(next))
+        logs.append({"draw": nextLogDraw, "erase": nextLogErase})
+
     left = []
     right = []
     if direction == -1:
-        left = rubberBand(points, A, next[0], direction)
-        right = rubberBand(points, next[1], B, direction)
+        left = rubberBand(points, A, next[0], direction, logs)
+        right = rubberBand(points, next[1], B, direction, logs)
     else:
-        left = rubberBand(points, A, next[1], direction)
-        right = rubberBand(points, next[0], B, direction)
+        left = rubberBand(points, A, next[1], direction, logs)
+        right = rubberBand(points, next[0], B, direction, logs)
     result = []
     result.extend(left)
     if next[0] == next[1]:
@@ -251,19 +275,25 @@ def solve(screen, points):
     (ydown, yup) = getLeftRightBounds(points, (0, 0), (1, 0))
 
     up_left = [xleft[1]]
-    up_left.extend(rubberBand(points, xleft[1], yup[0], -1))
+    logs_upLeft = [{"draw": [xleft[1], yup[0]], "erase":[]}]
+    up_left.extend(rubberBand(points, xleft[1], yup[0], -1, logs_upLeft))
+    # print(logs_upLeft)
     up_left.extend([yup[0]])
 
     down_left = [xleft[0]]
-    down_left.extend(rubberBand(points, xleft[0], ydown[0], -1))
+    logs_downLeft = [{"draw": [xleft[0], ydown[0]], "erase":[]}]
+    down_left.extend(rubberBand(points, xleft[0], ydown[0], -1, logs_downLeft))
     down_left.extend([ydown[0]])
 
     up_right = [yup[1]]
-    up_right.extend(rubberBand(points, yup[1], xright[1], 1))
+    logs_upRight = [{"draw": [yup[1], xright[1]], "erase":[]}]
+    up_right.extend(rubberBand(points, yup[1], xright[1], 1, logs_upRight))
     up_right.extend([xright[1]])
 
     down_right = [ydown[1]]
-    down_right.extend(rubberBand(points, ydown[1], xright[0], 1))
+    logs_downRight = [{"draw": [ydown[1], xright[0]], "erase":[]}]
+    down_right.extend(rubberBand(
+        points, ydown[1], xright[0], 1, logs_downRight))
     down_right.extend([xright[0]])
 
     hull = []
@@ -272,10 +302,28 @@ def solve(screen, points):
     hull.extend(list(reversed(down_right)))
     hull.extend(list(reversed(down_left)))
 
-    plotPoints(screen, hull, (250, 0, 0), 2)
+    logs = []
+    if xleft[0] != xleft[1]:
+        logs.append({"draw": list(xleft), "erase": []})
+    if xright[0] != xright[1]:
+        logs.append({"draw": list(xright), "erase": []})
+    if yup[0] != yup[1]:
+        logs.append({"draw": list(yup), "erase": []})
+    if ydown[0] != ydown[1]:
+        logs.append({"draw": list(ydown), "erase": []})
+    logs.extend(logs_upLeft[:1])
+    logs.extend(logs_downLeft[:1])
+    logs.extend(logs_upRight[:1])
+    logs.extend(logs_downRight[:1])
+    logs.extend(logs_upLeft[1:])
+    logs.extend(logs_downLeft[1:])
+    logs.extend(logs_upRight[1:])
+    logs.extend(logs_downRight[1:])
 
-    drawPolygon(screen, hull, (0, 250, 0), True)
-    return hull
+    # plotPoints(screen, hull, (250, 0, 0), 2)
+
+    # drawPolygon(screen, hull, (0, 250, 0), True)
+    return (hull, logs)
 
 
 def main():
@@ -285,19 +333,34 @@ def main():
 
     # region test
 
-    points = getRandomPoints(20, 1/1.2)
+    points = getRandomPoints(20, 1/2)
     points = list(set(points))
     print(points)
+    print("\n\n")
     plotPoints(screen, points, (0, 0, 0), 1)
-    solve(screen, points)
+    (hull, logs_upLeft) = solve(screen, points)
 
     # endregion
     pygame.display.flip()
 
+    logs_upLeft_iter = iter(logs_upLeft)
     while True:
         for events in pygame.event.get():
             if events.type == QUIT:
                 sys.exit(0)
+            if events.type == KEYDOWN and events.key == K_f:
+                return
+            if events.type == KEYUP and events.key == K_SPACE:
+                log = next(logs_upLeft_iter, None)
+                if log != None:
+                    drawPolygon(screen, log["erase"], screen_color)
+                    drawPolygon(screen, log["draw"], (0, 0, 250))
+                    print(log)
+                    pygame.display.flip()
+                else:
+                    plotPoints(screen, hull, (255, 0, 0), 3)
+                    drawPolygon(screen, hull, generateRandomColorExceptWhite())
+                    pygame.display.flip()
 
 
 main()
