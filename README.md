@@ -1,5 +1,11 @@
 # Convex Hull
 
+### Code Summary
+
+The program generates random points and shows iteratively how the convex hull was determined.
+
+##### NOTE : the code might have bugs and some obvious optimizations not implemented like, for every iteration we can divide outbound points and inbound points for the current edge and only apply check on the outbound points in the next iteration, instead of apply check on the set of points
+
 ![](https://github.com/thoi98/convexHull/blob/main/extras/animation.gif)
 
 ### What is the convex hull problem?
