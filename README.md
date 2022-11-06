@@ -8,7 +8,7 @@ If you had random points given to you on a 2D space, how do we find out the smal
 
 ![](https://github.com/thoi98/convexHull/blob/readme/extras/valid_invalid_hull.png)
 
-### Though process
+### Thought process
 
 My solution was inspired from a thought where you can imagine the points to be thumb pins on a board (marked in black in figure 2), and if you stretch a rubber around it (marked in blue), and when you let the rubber band loose it will bind itself around the outer most pins (marked in red in figure 3). The polygon now formed is the convex hull for those points.
 
