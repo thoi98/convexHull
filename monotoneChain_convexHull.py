@@ -30,53 +30,6 @@ def drawAxes(screen, color=(100, 100, 100)):
         (-width/2, 0)), transFormCoords((width/2, 0)))
 
 
-def drawNewXAxis(screen, A, B):
-    a = B[1] - A[1]
-    b = A[0] - B[0]
-    # c = a*(A[0]) + b1(A[1])
-
-    p1: Tuple
-    p2: Tuple
-    p3: Tuple
-    p4: Tuple
-    if a > b:
-        p1 = (-1*(b*height)/(2*a), height/2)
-        p2 = ((b*height)/(2*a), -height/2)
-
-        p3 = ((a*height)/(2*b), height/2)
-        p4 = (-1*(a*height)/(2*b), -height/2)
-    else:
-        p1 = (width/2, -1*(a*width)/(2*b))
-        p2 = (-width/2, (a*width)/(2*b))
-
-        p3 = (width/2, (b*width)/(2*a))
-        p4 = (-width/2, -1*(b*width)/(2*a))
-    pygame.draw.line(screen, (250, 0, 0), transFormCoords(p1),
-                     transFormCoords(p2))
-    pygame.draw.line(screen, (0, 250, 0), transFormCoords(p3),
-                     transFormCoords(p4))
-
-
-def drawInfLine(screen, color, A, B, origin=False):
-    a = B[1] - A[1]
-    b = A[0] - B[0]
-    c = a*(A[0]) + b*(A[1])
-
-    if origin:
-        c = 0
-
-    p1: Tuple
-    p2: Tuple
-    if a > b:
-        p1 = (c - ((b*height)/(2*a)), height/2) if a != 0 else (c, height/2)
-        p2 = (c + ((b*height)/(2*a)), -height/2) if a != 0 else (c, -height/2)
-    else:
-        p1 = (width/2, c - ((a*width)/(2*b))) if b != 0 else (width/2, c)
-        p2 = (-width/2, c + ((a*width)/(2*b))) if b != 0 else (-width/2, c)
-    pygame.draw.line(screen, color, transFormCoords(p1),
-                     transFormCoords(p2))
-
-
 def drawPolygon(screen, points, color, isClosed=False):
 
     size = len(points)
@@ -86,19 +39,6 @@ def drawPolygon(screen, points, color, isClosed=False):
     if isClosed == True:
         pygame.draw.line(screen, color, transFormCoords(
             points[0]), transFormCoords(points[size-1]))
-
-
-def getPerpendicularLine(A, B):
-    a = B[1] - A[1]
-    b = A[0] - B[0]
-    a_ = -b
-    b_ = a
-
-    c = a_*(A[0]) + b_*(A[1])
-
-    A_ = (0, c/b_) if b_ != 0 else (c/a_, 0)
-    B_ = (1, (c-a_)/(b_)) if b_ != 0 else (c/a_, 1)
-    return (A_, B_)
 
 
 def plotPoints(screen, points, color, radius=1):
