@@ -64,24 +64,26 @@ def solve(points):
 
     upHull = points[:2]
     logs = []
-    logs.append({"draw": upHull[:], "erase": []})
+    logs.append({"draw": upHull[:], "erase": [], "color": (0, 0, 250)})
     for i in range(2, len(points)):
 
         while len(upHull) > 1 and crossProduct((points[i][0]-upHull[len(upHull)-1][0], points[i][1]-upHull[len(upHull)-1][1]), (upHull[len(upHull)-1][0]-upHull[len(upHull)-2][0], upHull[len(upHull)-1][1]-upHull[len(upHull)-2][1])) < 0:
             upHull.pop()
         upHull.append(points[i])
-        logs.append({"draw": upHull[:], "erase": logs[len(logs)-1]["draw"]})
+        logs.append({"draw": upHull[:], "erase": logs[len(
+            logs)-1]["draw"], "color": (0, 0, 250)})
 
     points.reverse()
     lowHull = points[:2]
 
-    logs.append({"draw": lowHull[:], "erase": []})
+    logs.append({"draw": lowHull[:], "erase": [], "color": (250, 0, 0)})
     for i in range(2, len(points)):
 
         while len(lowHull) > 1 and crossProduct((points[i][0]-lowHull[len(lowHull)-1][0], points[i][1]-lowHull[len(lowHull)-1][1]), (lowHull[len(lowHull)-1][0]-lowHull[len(lowHull)-2][0], lowHull[len(lowHull)-1][1]-lowHull[len(lowHull)-2][1])) < 0:
             lowHull.pop()
         lowHull.append(points[i])
-        logs.append({"draw": lowHull[:], "erase": logs[len(logs)-1]["draw"]})
+        logs.append({"draw": lowHull[:], "erase": logs[len(
+            logs)-1]["draw"], "color": (250, 0, 0)})
 
     hull = upHull[:]
     if upHull[len(upHull)-1] != lowHull[0]:
@@ -147,8 +149,6 @@ def main():
                 plotPoints(screen, points, (0, 0, 0), 2)
                 (hull, logs) = solve(points)
 
-                # draw points
-                plotPoints(screen, points, (0, 0, 0), 2)
                 if axesVisible == True:
                     drawAxes(screen)
                 logs_iter = iter(logs)
@@ -190,7 +190,8 @@ def main():
                 drawAxes(screen)
             if log != None:
                 drawPolygon(screen, log["erase"], screen_color)
-                drawPolygon(screen, log["draw"], (0, 0, 250))
+                # drawPolygon(screen, log["draw"], (0, 0, 250))
+                drawPolygon(screen, log["draw"], log["color"])
                 # print(log)
                 pygame.display.flip()
             else:
